@@ -1,0 +1,125 @@
+enum UserStatus {
+    INVITED
+    VERIFIED
+}
+
+model User {
+    id                 String            @id @default(uuid())
+    name               String?
+    email              String?           @unique
+    pictureUrl         String?           @default('https://i.imgur.com/ZdJSK3Y.jpeg')
+    tokenInvitation    String?
+
+    status             UserStatus        @default(VERIFIED)
+
+    // this is the role of the user for the application
+    globalRole         String            @default('USER')
+    password           String?           @password @omit
+    createdAt          DateTime          @default(now())
+    updatedAt          DateTime          @updatedAt @default(now())
+
+    pwaSubscriptions   PwaSubscription[] @relation("user")
+
+    printers           Printer[]         @relation("user")
+    reviews            Review[]          @relation("user")
+    printOrders        PrintOrder[]      @relation("user")
+    messagesAsSender   Message[]         @relation("sender")
+    messagesAsReceiver Message[]         @relation("receiver")
+
+    @@auth()
+    @@allow("all", auth().id == this.id)
+    @@allow('all', auth().globalRole == 'ADMIN')
+
+    //we only allow that user to register if they don't create an admin role
+    @@allow("create", globalRole != 'ADMIN')
+    @@allow("read", true)
+}
+
+model Printer {
+
+    id             String       @id @default(uuid())
+    name           String
+    specifications String?
+    location       String?
+    pricePerGram   String?
+    pricePerHour   String?
+    rating         String?
+    status         String?
+
+    userId         String
+    user           User?        @relation(fields: [userId], references: [id], name: "user")
+
+    reviews        Review[]     @relation("printer")
+    printOrders    PrintOrder[] @relation("printer")
+    createdAt      DateTime     @default(now())
+    updatedAt      DateTime     @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model Review {
+
+    id        String   @id @default(uuid())
+    rating    Float
+    comment   String?
+
+    userId    String
+    user      User?    @relation(fields: [userId], references: [id], name: "user")
+    printerId String
+    printer   Printer? @relation(fields: [printerId], references: [id], name: "printer")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model PrintOrder {
+
+    id              String    @id @default(uuid())
+    modelFileUrl    String
+    specifications  String?
+    estimatedTime   Float?
+    estimatedCost   String?
+    status          String?
+    deliveryAddress String?
+    paymentStatus   String?
+
+    userId          String
+    user            User?     @relation(fields: [userId], references: [id], name: "user")
+    printerId       String
+    printer         Printer?  @relation(fields: [printerId], references: [id], name: "printer")
+
+    messagesAsOrder Message[] @relation("order")
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model Message {
+
+    id         String      @id @default(uuid())
+    content    String
+
+    senderId   String
+    sender     User?       @relation(fields: [senderId], references: [id], name: "sender")
+    receiverId String
+    receiver   User?       @relation(fields: [receiverId], references: [id], name: "receiver")
+    orderId    String?
+    order      PrintOrder? @relation(fields: [orderId], references: [id], name: "order")
+
+    createdAt  DateTime    @default(now())
+    updatedAt  DateTime    @updatedAt @default(now())
+    @@allow("all", true)
+}
+
+model PwaSubscription {
+    id        String   @id @default(uuid())
+    content   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt @default(now())
+
+    userId    String   @default(auth().id)
+    user      User     @relation(fields: [userId], references: [id], name: 'user')
+
+    @@allow("all", true)
+}
+
