@@ -1,0 +1,9 @@
+{
+  "name": "terms-and-conditions",
+  "version": "1.0.0",
+  "description": "Edit and present Terms and Conditions for using your site.",
+  "dependencies": [],
+  "devDependencies": [],
+  "pluginDependencies": ["richtext-editor", "toolbox"],
+  "keywords": []
+}

@@ -1,0 +1,6 @@
+{
+  "name": "richtext-editor",
+  "version": "1.0.4",
+  "description": "RichText Editor is a plugin for editing and viewing Notion-like rich text content.  ",
+  "dependencies": ["@blocknote/core", "@blocknote/mantine", "@blocknote/react"]
+}

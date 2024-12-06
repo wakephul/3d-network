@@ -8,6 +8,7 @@ import {
   ScrollRestoration,
 } from '@remix-run/react'
 
+import { TermsAndConditions } from '@/plugins/terms-and-conditions/client'
 import { WorkspaceProvider } from './core/.marblism/workspace'
 import { UserProvider } from './core/context'
 import { TrpcClient } from './core/trpc'
@@ -44,14 +45,14 @@ export const links: LinksFunction = () => {
     },
   ]
 
-if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production') {
     items.push({
       rel: 'manifest',
       href: '/manifest.webmanifest',
     })
   }
 
-return items
+  return items
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -69,10 +70,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <AnalyticsProvider>
               <WorkspaceProvider>
                 <UserProvider>
-                  
-                  <SocketClient.Provider>{children}</SocketClient.Provider>
-
-</UserProvider>
+                  <SocketClient.Provider>
+                    {children}
+                    <TermsAndConditions />
+                  </SocketClient.Provider>
+                </UserProvider>
               </WorkspaceProvider>
             </AnalyticsProvider>
           </TrpcClient.Provider>

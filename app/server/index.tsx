@@ -5,6 +5,7 @@ import { Trpc } from '@/core/trpc/base'
 import { AiServer } from '@/plugins/ai/server'
 import { EmailServer } from '@/plugins/email/server'
 import { UploadServer } from '@/plugins/upload/server'
+import { TermsAndConditionsServer } from '@/plugins/terms-and-conditions/server'
 
 import { PwaServer } from '~/plugins/pwa/server'
 
@@ -18,7 +19,7 @@ export const appRouter = Trpc.mergeRouters(
     upload: UploadServer.trpcRouter,
     ai: AiServer.trpcRouter,
     email: EmailServer.trpcRouter,
-
+    termsAndConditions: TermsAndConditionsServer.trpcRouter,
     pwa: PwaServer.trpcRouter,
   }),
 )
